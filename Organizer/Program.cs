@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Organizer
 {
@@ -7,23 +8,41 @@ namespace Organizer
     {
         public static void Main(string[] args)
         {
-            // Press <F5> to run this code, when "Hello World!" appears in a black box, remove the line below and write your code below.
-            Console.WriteLine("Hello World!");
-            ShowList("Example of ShowList", new List<int>() { -33, 3, 2, 2, 3, 34, 34, 32, 1, 3, 5, 3, -22, -99, 33, -22, 11, 3, 33, 12, -2, -21, 4, 34, 22, 15, 34,-22 });
+            Console.WriteLine("Please input Number");
+            int number = Convert.ToInt32(Console.ReadLine());
+            List<int> thisList = MakeList(number);
+            ShowList("List", thisList);
+            Stopwatch stopWatch = new Stopwatch();
+            stopWatch.Start();
+            ShiftHighestSort newSort = new ShiftHighestSort();
+            List<int> sortedList = newSort.Sort(thisList);
+            ShowList("sortedList", sortedList);
+            stopWatch.Stop();
+            Console.Write(stopWatch.ElapsedMilliseconds);
+            stopWatch.Start();
+            RotateSort rotate = new RotateSort();
+            List<int> rotatedList = rotate.Sort(thisList);
+            ShowList("rotatedList", rotatedList);
+            Console.Write(stopWatch.ElapsedMilliseconds);
+            stopWatch.Stop();
         }
 
+        static List<int> MakeList(int N)
+        {
+            var rand = new Random();
+            var newList = new List<int>();
 
-        /* Example of a static function */
+            for (int i = 0; i < N; i++)
+            {
+                newList.Add(rand.Next(-99, 99));
+            }
 
-        /// <summary>
-        /// Show the list in lines of 20 numbers each
-        /// </summary>
-        /// <param name="label">The label for this list</param>
-        /// <param name="theList">The list to show</param>
+            return newList;
+        }
         public static void ShowList(string label, List<int> theList)
         {
             int count = theList.Count;
-            if (count > 100)
+            if (count > 300)
             {
                 count = 300; // Do not show more than 300 numbers
             }

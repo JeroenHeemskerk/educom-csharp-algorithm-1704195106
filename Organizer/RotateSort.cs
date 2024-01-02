@@ -8,27 +8,35 @@ namespace Organizer
 
         private List<int> array = new List<int>();
 
-        /// <summary>
-        /// Sort an array using the functions below
-        /// </summary>
-        /// <param name="input">The unsorted array</param>
-        /// <returns>The sorted array</returns>
         public List<int> Sort(List<int> input)
         {
             array = new List<int>(input);
 
-            SortFunction(0, array.Count - 1);
+            array = SortFunction(array);
             return array;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="low">De index within this.array to start with</param>
-        /// <param name="high">De index within this.array to stop with</param>
-        private void SortFunction(int low, int high)
+        private List<int> Partitioning(List<int> array, bool higher)
         {
-            throw new NotImplementedException();
+            int pivot = array[0];
+            var newArray = new List<int>();
+            if (higher) 
+            {
+                for (int i = 1; i < array.Count; i++)
+                    if (array[i] > pivot)
+                    {
+                        newArray.Add(array[i]);
+                    }
+            }
+            else
+            {
+                for (int i = 1; i < array.Count; i++)
+                    if (array[i] <= pivot)
+                    {
+                        newArray.Add(array[i]);
+                    }
+            }
+            return newArray;
         }
 
         /// 
@@ -37,9 +45,35 @@ namespace Organizer
         /// <param name="low">De index within this.array to start with</param>
         /// <param name="high">De index within this.array to stop with</param>
         /// <returns>The index in the array of the first of the 'high' digits</returns>
-        private int Partitioning(int low, int high)
+        private List<int> SortFunction(List<int> array)
         {
-            throw new NotImplementedException();
+            if (array.Count < 2){
+                return array;
+            }
+            int pivot = array[0];
+            var sortedArray = new List<int>();
+            var lower = new List<int>();
+            var higher = new List<int>();
+            for (int i = 1; i < array.Count; i++)
+            {
+                if (array[i] < pivot)
+                {
+                    lower.Add(array[i]);
+                } else
+                {
+                    higher.Add(array[i]);
+                }
+            }
+            foreach (int value in SortFunction(lower))
+            {
+                sortedArray.Add(value);
+            }
+            sortedArray.Add(pivot);
+            foreach (int value in SortFunction(higher))
+            {
+                sortedArray.Add(value);
+            }
+            return sortedArray;
         }
     }
 }
