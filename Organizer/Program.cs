@@ -42,9 +42,9 @@ namespace Organizer
         public static void ShowList(string label, List<int> theList)
         {
             int count = theList.Count;
-            if (count > 300)
+            if (count > 200)
             {
-                count = 300; // Do not show more than 300 numbers
+                count = 200; // Do not show more than 300 numbers
             }
             Console.WriteLine();
             Console.Write(label);
