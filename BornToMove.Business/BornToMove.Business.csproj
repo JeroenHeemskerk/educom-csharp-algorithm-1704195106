@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\BornToMove.DAL\BornToMove.DAL.csproj" />
+  </ItemGroup>
+
 </Project>
