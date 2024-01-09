@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Organizer
+namespace Org
 {
 	public class RotateSort
 	{
 
         private List<int> array = new List<int>();
 
-        public List<int> Sort(List<int> input)
+        /*public List<T> Sort(List<T> input, IComparer<T> comparer)
         {
-            array = new List<int>(input);
-
-            array = SortFunction(array);
-            return array;
+            this.array = new List<int>(input);
+            Comparer = comparer;
+            this.array = SortFunction(array);
+            return this.array;
         }
 
         private List<int> Partitioning(List<int> array, bool higher)
@@ -75,5 +75,6 @@ namespace Organizer
             }
             return sortedArray;
         }
+        */
     }
 }

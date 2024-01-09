@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace Organizer
+namespace Org
 {
     public class Program
     {
@@ -21,8 +21,8 @@ namespace Organizer
             Console.Write(stopWatch.ElapsedMilliseconds);
             stopWatch.Start();
             RotateSort rotate = new RotateSort();
-            List<int> rotatedList = rotate.Sort(thisList);
-            ShowList("rotatedList", rotatedList);
+            //List<int> rotatedList = rotate.Sort(thisList);
+            //ShowList("rotatedList", rotatedList);
             Console.Write(stopWatch.ElapsedMilliseconds);
             stopWatch.Stop();
         }

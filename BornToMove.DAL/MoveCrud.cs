@@ -1,29 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
-using BornToMove;
-using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Options;
-using System.Reflection.Metadata;
-using Microsoft.Identity.Client;
+﻿using System;
+using System.Linq;
 
-namespace BornToMove.DAL
-{
-    public class MoveContext : DbContext
-    {
-
-        private const string MSSQL_CONNECTION_STRING = "Server=(localdb)\\mssqllocaldb;Database=born2move;Trusted_Connection=true;TrustServerCertificate=true;";
-
-        public DbSet<Move> Moves { get; set; }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder builder)
-        {
-            builder.UseSqlServer(MSSQL_CONNECTION_STRING);
-
-            base.OnConfiguring(builder);
-        }
-    }
-
+namespace BornToMove.DAL {
     public class MoveCrud
-    { 
+    {
         public MoveCrud() { context = new MoveContext(); }
         public MoveContext context { get; set; }
         public void createMove(Move newMove)
@@ -32,8 +12,9 @@ namespace BornToMove.DAL
             context.SaveChanges();
         }
 
-        public void updateMove(String oldname, 
-            String newName = null, String newDescription = null, int newSweatrate = 0) {
+        public void updateMove(String oldname,
+            String newName = null, String newDescription = null, int newSweatrate = 0, MoveRating rating = null)
+        {
             Move? oldMove = context.Moves.FirstOrDefault(Move => Move.name == oldname);
             if (oldMove != null)
             {
@@ -45,9 +26,13 @@ namespace BornToMove.DAL
                 {
                     oldMove.description = newDescription;
                 }
-                if (newSweatrate != 0) 
+                if (newSweatrate != 0)
                 {
                     oldMove.sweatrate = newSweatrate;
+                }
+                if (rating is not null)
+                {
+                    oldMove.Ratings.Add(rating);
                 }
                 context.SaveChanges();
             }
@@ -74,5 +59,48 @@ namespace BornToMove.DAL
             List<Move> allMoves = context.Moves.ToList();
             return allMoves;
         }
+
+        public void createRating(MoveRating rating)
+        {
+            Move? assocMove = context.Moves.FirstOrDefault(Move => Move.name == rating.Move.name);
+            if (assocMove != null) {
+                assocMove.Ratings.Add(rating);
+                context.MoveRating.Add(rating);
+            }
+        }
+
+        public void addRatingToMove(MoveRating rating, String moveName)
+        {
+            Move? move = context.Moves.FirstOrDefault(Move => Move.name == rating.Move.name);
+            if (move is not null)
+            {
+                move.Ratings.Add(rating);
+                context.SaveChanges();
+            }
+        }
+
+        public double readRatingByMove(String name)
+        {
+            double rating = 0;
+            IEnumerable<MoveRating> ratingsByMove = context.MoveRating.Where(rating => rating.Move.name == name);
+            if (ratingsByMove.Any()) {Console.WriteLine("this move has the following ratings" + ratingsByMove.ElementAt(0).Rating.ToString());}
+            if (ratingsByMove.Any())
+            {
+                rating = ratingsByMove.Select(rating => rating.Rating).Average();
+            }
+            return rating;
+        }
+
+        public double readVoteByMove(String name)
+        {
+            double vote = 0;
+            IEnumerable<MoveRating> votesByMove = context.MoveRating.Where(rating => rating.Move.name == name);
+            if (votesByMove.Any())
+            {
+                vote = votesByMove.Select(rating => rating.Vote).Average();
+            }
+            return vote;
+        }
     }
 }
+

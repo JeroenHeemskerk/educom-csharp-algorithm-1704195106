@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.ExceptionServices;
 
-namespace Organizer
+namespace Org
 {
 	public class ShiftHighestSort
     {

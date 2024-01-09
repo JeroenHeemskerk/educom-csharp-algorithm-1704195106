@@ -10,26 +10,31 @@ namespace BornToMove
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Het is tijd dat u gaat bewegen!");
-            Console.WriteLine("Wilt u een bewegingssuggestie of wilt u uit de lijst kiezen?");
-            Console.WriteLine("Toets 1 voor een suggestie of 2 voor kiezen uit de lijst.");
-            Move chosenMove;
-            int choice = validChoice(1, 2);
-            bool newMove = false;
-            try
-            {
+            try {
                 BuMove buMove = new BuMove();
+                buMove.AddMovesIfEmpty();
+
+                Console.WriteLine("Het is tijd dat u gaat bewegen!");
+                Console.WriteLine("Wilt u een bewegingssuggestie of wilt u uit de lijst kiezen?");
+                Console.WriteLine("Toets 1 voor een suggestie of 2 voor kiezen uit de lijst.");
+                Move chosenMove;
+                double chosenRating;
+                double chosenVote;
+                int choice = validChoice(1, 2);
+                bool newMove = false;
                 if (choice == 1)
                 {
                     Console.WriteLine("De volgende move is voor u gekozen:");
-                    chosenMove = buMove.getRandomMove();
+                    (chosenMove, chosenRating, chosenVote) = buMove.getRandomMove();
                 }
                 else
                 {
                     Console.WriteLine("Kies een move uit de volgende lijst van moves of toets 0 om een nieuwe move te maken.");
-                    List<Move> allMoves = buMove.getAllMoves();
-                    foreach (Move move in allMoves) {
-                        Console.WriteLine(move.name + ": " + move.description + ": " + move.sweatrate.ToString());
+                    (List<Move> allMoves, IEnumerable<double> allRatings, IEnumerable<double> allVotes) = buMove.getAllMoves();
+                    for (int indexer = 0; indexer != allMoves.Count; indexer++) {
+                        Console.WriteLine(allMoves[indexer].name + ": " + allMoves[indexer].description + ", sweatrate: " 
+                            + allMoves[indexer].sweatrate.ToString() + ", rating: " + allRatings.ElementAt(indexer) 
+                            + ", Vote:" + allVotes.ElementAt(indexer));
                     }
                     choice = validChoice(0, allMoves.Count());
                     if (choice == 0)
@@ -73,27 +78,25 @@ namespace BornToMove
                                 break;
                             }
                         }
-                        chosenMove = buMove.getLastMove();
+                        (chosenMove, chosenRating, chosenVote) = buMove.getLastMove();
                         Console.WriteLine("U heeft de volgende nieuwe move gemaakt:");
                     }
                     else
                     {
-                        chosenMove = buMove.getMoveById(choice);
+                        (chosenMove, chosenRating, chosenVote) = buMove.getMoveById(choice);
                         Console.WriteLine("U heeft de volgende move gekozen:");
                     }
                 }
-                Console.WriteLine(chosenMove.name + " - " + chosenMove.description);
+                Console.WriteLine(chosenMove.name + " - " + chosenMove.description + ", Rating:" + chosenRating
+                    + ", Vote:" + chosenVote);
                 if (!newMove)
                 {
-                    Console.WriteLine("Als u de move heeft uitgevoerd, voer dan uw beoordeling van de move in:");
-                    int rating = validChoice(1, 5);
-                    Console.WriteLine("Voer nu de sweatrate van de move in:");
-                    int newSweat = validChoice(1, 5);
-                    chosenMove.sweatrate = newSweat;
-                    buMove.tryToUpdateMove(chosenMove.name, chosenMove);
-                }
-
-                
+                    Console.WriteLine("Als u de move heeft uitgevoerd, voer dan uw rating van de move in:");
+                    int newRating = validChoice(1, 5);
+                    Console.WriteLine("Voer nu de vote van de move in:");
+                    int newVote = validChoice(1, 5);
+                    buMove.TryToMakeRating(new MoveRating(chosenMove, newRating, newVote), chosenMove.name);
+                }    
             }
             catch (SqlException e)
             {
