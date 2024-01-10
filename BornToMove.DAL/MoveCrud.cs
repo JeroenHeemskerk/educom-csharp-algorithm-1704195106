@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Linq;
 
 namespace BornToMove.DAL {
@@ -83,7 +84,7 @@ namespace BornToMove.DAL {
         {
             double rating = 0;
             IEnumerable<MoveRating> ratingsByMove = context.MoveRating.Where(rating => rating.Move.name == name);
-            if (ratingsByMove.Any()) {Console.WriteLine("this move has the following ratings" + ratingsByMove.ElementAt(0).Rating.ToString());}
+            if (ratingsByMove.Any()) { Console.WriteLine("this move has the following ratings" + ratingsByMove.ElementAt(0).Rating.ToString()); }
             if (ratingsByMove.Any())
             {
                 rating = ratingsByMove.Select(rating => rating.Rating).Average();
@@ -101,6 +102,22 @@ namespace BornToMove.DAL {
             }
             return vote;
         }
+
+        public IEnumerable<MoveRating> readAllMovesWithRatings()
+        {
+            var MovesWithRating = context.Moves.Include(m => m.Ratings);
+            var averageRatings = MovesWithRating.Select(m => new BornToMove.MoveRating()
+            {
+                Move = m,
+                Rating = m.Ratings.Select(rating => rating.Rating).DefaultIfEmpty().Average(),
+                Vote = m.Ratings.Select(rating => rating.Vote).DefaultIfEmpty().Average()
+            });
+
+            
+            return averageRatings;
+        }
+
+
     }
 }
 

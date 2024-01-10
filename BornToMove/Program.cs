@@ -18,23 +18,22 @@ namespace BornToMove
                 Console.WriteLine("Wilt u een bewegingssuggestie of wilt u uit de lijst kiezen?");
                 Console.WriteLine("Toets 1 voor een suggestie of 2 voor kiezen uit de lijst.");
                 Move chosenMove;
-                double chosenRating;
-                double chosenVote;
+                MoveRating chosenRating;
                 int choice = validChoice(1, 2);
                 bool newMove = false;
                 if (choice == 1)
                 {
                     Console.WriteLine("De volgende move is voor u gekozen:");
-                    (chosenMove, chosenRating, chosenVote) = buMove.getRandomMove();
+                    (chosenMove, chosenRating) = buMove.getRandomMove();
                 }
                 else
                 {
                     Console.WriteLine("Kies een move uit de volgende lijst van moves of toets 0 om een nieuwe move te maken.");
-                    (List<Move> allMoves, IEnumerable<double> allRatings, IEnumerable<double> allVotes) = buMove.getAllMoves();
+                    (List<Move> allMoves, IEnumerable<MoveRating> allRatings) = buMove.getAllMoves();
                     for (int indexer = 0; indexer != allMoves.Count; indexer++) {
                         Console.WriteLine(allMoves[indexer].name + ": " + allMoves[indexer].description + ", sweatrate: " 
-                            + allMoves[indexer].sweatrate.ToString() + ", rating: " + allRatings.ElementAt(indexer) 
-                            + ", Vote:" + allVotes.ElementAt(indexer));
+                            + allMoves[indexer].sweatrate.ToString() + ", rating: " + allRatings.Select(Rating => Rating.Rating).ElementAt(indexer) 
+                            + ", Vote:" + allRatings.Select(Rating => Rating.Vote).ElementAt(indexer));
                     }
                     choice = validChoice(0, allMoves.Count());
                     if (choice == 0)
@@ -78,17 +77,17 @@ namespace BornToMove
                                 break;
                             }
                         }
-                        (chosenMove, chosenRating, chosenVote) = buMove.getLastMove();
+                        (chosenMove, chosenRating) = buMove.getLastMove();
                         Console.WriteLine("U heeft de volgende nieuwe move gemaakt:");
                     }
                     else
                     {
-                        (chosenMove, chosenRating, chosenVote) = buMove.getMoveById(choice);
+                        (chosenMove, chosenRating) = buMove.getMoveById(choice);
                         Console.WriteLine("U heeft de volgende move gekozen:");
                     }
                 }
-                Console.WriteLine(chosenMove.name + " - " + chosenMove.description + ", Rating:" + chosenRating
-                    + ", Vote:" + chosenVote);
+                Console.WriteLine(chosenMove.name + " - " + chosenMove.description + ", Rating:" + chosenRating.Rating
+                    + ", Vote:" + chosenRating.Vote);
                 if (!newMove)
                 {
                     Console.WriteLine("Als u de move heeft uitgevoerd, voer dan uw rating van de move in:");

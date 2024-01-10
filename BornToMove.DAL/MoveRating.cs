@@ -10,9 +10,10 @@ namespace BornToMove
         public double Vote { set; get; }
 
         /// <summary>
-        /// ONLY FOR ENITTY FRAMEWORK!
+        /// ONLY FOR ENTITY FRAMEWORK!
+        /// ALSO NEEDED FOR MAKING AVERAGE RATINGS WITH LINQ
         /// </summary>
-        private MoveRating() { }            
+        public MoveRating() { }            
         
         public MoveRating(Move Move, double Rating, double Vote)
         {

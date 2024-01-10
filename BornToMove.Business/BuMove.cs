@@ -1,4 +1,5 @@
 ﻿using BornToMove.DAL;
+using System.Net.WebSockets;
 
 namespace BornToMove.Business
 {
@@ -18,47 +19,51 @@ namespace BornToMove.Business
             return false; 
         }
 
-        public (Move, double, double) getRandomMove()
+        public (Move, MoveRating) getRandomMove()
         {
             Random rand = new Random();
-            (List<Move> allMoves, IEnumerable<double> allRatings, IEnumerable<double> allVotes) = getAllMoves();
+            (List<Move> allMoves, IEnumerable<MoveRating> Ratings) = getAllMoves();
             int moveNr = rand.Next(0, allMoves.Count - 1);
-            return (allMoves[moveNr], allRatings.ElementAt(moveNr), allVotes.ElementAt(moveNr));
+            Move thisMove = allMoves[moveNr]; 
+            return (allMoves[moveNr], Ratings.ElementAt(moveNr));
         }
 
-        public (List<Move>, IEnumerable<double>, IEnumerable<double>) getAllMoves()
+        public (List<Move>, IEnumerable<MoveRating>) getAllMoves()
         {
-            List<Move> moves = this.moveCrud.readAllMoves();
-            IEnumerable<double> ratings = getAllRatings(moves.Select(moves => moves.name));
-            IEnumerable<double> votes = getAllVotes(moves.Select(moves => moves.name));
-            return (moves, ratings, votes);
+            List<Move> moves = moveCrud.readAllMoves();
+            IEnumerable<MoveRating> averageRatings = moveCrud.readAllMovesWithRatings();
+            return (moves, averageRatings);
         }
 
         public bool tryToUpdateMove(String oldName, Move move)
         {
-            if (this.moveCrud.readMoveByName(move.name) is not null)
+            if (moveCrud.readMoveByName(move.name) is not null)
             {
-                this.moveCrud.updateMove(oldName, move.name, move.description, move.sweatrate);
+                moveCrud.updateMove(oldName, move.name, move.description, move.sweatrate);
                 return true;
             }
             return false;
         }
 
-        public (Move, double, double) getLastMove()
+        public (Move, MoveRating) getLastMove()
         {
-            (List<Move> allMoves, IEnumerable<double> allRatings, IEnumerable<double> allVotes) = getAllMoves();
-            return (allMoves[allMoves.Count - 1], allRatings.ElementAt(allMoves.Count - 1), allVotes.ElementAt(allMoves.Count - 1));
+            (List<Move> allMoves, IEnumerable<MoveRating> Ratings) = getAllMoves();
+            int moveNr = allMoves.Count - 1;
+            Move thisMove = allMoves[moveNr];
+            return (allMoves[moveNr], Ratings.ElementAt(moveNr));
         }
 
-        public (Move, double, double) getMoveById(int Id)
+        public (Move, MoveRating) getMoveById(int Id)
         {
-            (List<Move> allMoves, IEnumerable<double> allRatings, IEnumerable<double> allVotes) = getAllMoves();
-            return (allMoves[Id - 1], allRatings.ElementAt(Id - 1), allVotes.ElementAt(Id - 1));
+            (List<Move> allMoves, IEnumerable<MoveRating> Ratings) = getAllMoves();
+            int moveNr = allMoves.Count - 1;
+            Move thisMove = allMoves[moveNr];
+            return (allMoves[Id - 1], Ratings.ElementAt(Id - 1));
         }
 
         public void AddMovesIfEmpty()
         {
-            (List<Move> allMoves, IEnumerable<double> allRatings, IEnumerable<double> allVotes) = getAllMoves();
+            (List<Move> allMoves, IEnumerable<MoveRating> Ratings) = getAllMoves();
             if (allMoves.Count() == 0)
             {
                 TryToMakeAMove(new Move("Push up", "Ga horizontaal liggen op teentoppen en handen. " +
@@ -82,27 +87,6 @@ namespace BornToMove.Business
                 return true;
             }
             return false;
-        }
-
-
-        public List<double> getAllRatings(IEnumerable<String> names)
-        {
-            List<double> ratings = new List<double>();
-            foreach (String name in names)
-            {
-                ratings.Add(moveCrud.readRatingByMove(name));
-            }
-            return ratings;
-        }
-
-        public List<double> getAllVotes(IEnumerable<String> names)
-        {
-            List<double> votes = new List<double>();
-            foreach (String name in names)
-            {
-                votes.Add(moveCrud.readVoteByMove(name));
-            }
-            return votes;
         }
     }
 }
