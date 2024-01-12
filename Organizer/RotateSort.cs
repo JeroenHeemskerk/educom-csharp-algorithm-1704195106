@@ -3,15 +3,16 @@ using System.Collections.Generic;
 
 namespace Org
 {
-	public class RotateSort
+	public class RotateSort<T>
 	{
+        public IComparer<T> Comparer { get; set; }
 
-        private List<int> array = new List<int>();
+        private List<T> array = new List<T>();
 
-        /*public List<T> Sort(List<T> input, IComparer<T> comparer)
+        public List<T> Sort(List<T> input, IComparer<T> comparer)
         {
-            this.array = new List<int>(input);
-            Comparer = comparer;
+            this.array = new List<T>(input);
+            this.Comparer = comparer;
             this.array = SortFunction(array);
             return this.array;
         }
@@ -45,18 +46,18 @@ namespace Org
         /// <param name="low">De index within this.array to start with</param>
         /// <param name="high">De index within this.array to stop with</param>
         /// <returns>The index in the array of the first of the 'high' digits</returns>
-        private List<int> SortFunction(List<int> array)
+        private List<T> SortFunction(List<T> array)
         {
             if (array.Count < 2){
                 return array;
             }
-            int pivot = array[0];
-            var sortedArray = new List<int>();
-            var lower = new List<int>();
-            var higher = new List<int>();
+            T pivot = array[0];
+            var sortedArray = new List<T>();
+            var lower = new List<T>();
+            var higher = new List<T>();
             for (int i = 1; i < array.Count; i++)
             {
-                if (array[i] < pivot)
+                if (Comparer.Compare(pivot, array[i]) > 0)
                 {
                     lower.Add(array[i]);
                 } else
@@ -64,17 +65,16 @@ namespace Org
                     higher.Add(array[i]);
                 }
             }
-            foreach (int value in SortFunction(lower))
+            foreach (T value in SortFunction(lower))
             {
                 sortedArray.Add(value);
             }
             sortedArray.Add(pivot);
-            foreach (int value in SortFunction(higher))
+            foreach (T value in SortFunction(higher))
             {
                 sortedArray.Add(value);
             }
             return sortedArray;
         }
-        */
     }
 }

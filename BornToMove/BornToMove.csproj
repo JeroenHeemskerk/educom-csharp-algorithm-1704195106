@@ -18,6 +18,7 @@
   <ItemGroup>
     <ProjectReference Include="..\BornToMove.Business\BornToMove.Business.csproj" />
     <ProjectReference Include="..\BornToMove.DAL\BornToMove.DAL.csproj" />
+    <ProjectReference Include="..\BornToMove.OrganizerTest\BornToMove.OrganizerTest.csproj" />
   </ItemGroup>
 
 </Project>

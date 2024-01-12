@@ -13,10 +13,10 @@ namespace BornToMove.DAL {
             context.SaveChanges();
         }
 
-        public void updateMove(String oldname,
+        public void updateMove(int Id,
             String newName = null, String newDescription = null, int newSweatrate = 0, MoveRating rating = null)
         {
-            Move? oldMove = context.Moves.FirstOrDefault(Move => Move.name == oldname);
+            Move? oldMove = context.Moves.FirstOrDefault(Move => Move.Id == Id);
             if (oldMove != null)
             {
                 if (newName is not null)
@@ -39,9 +39,9 @@ namespace BornToMove.DAL {
             }
         }
 
-        public void delete(String name)
+        public void delete(int Id)
         {
-            Move? move = context.Moves.FirstOrDefault(Move => Move.name == name);
+            Move? move = context.Moves.FirstOrDefault(Move => Move.Id == Id);
             if (move is not null)
             {
                 context.Moves.Remove(move);
@@ -63,7 +63,7 @@ namespace BornToMove.DAL {
 
         public void createRating(MoveRating rating)
         {
-            Move? assocMove = context.Moves.FirstOrDefault(Move => Move.name == rating.Move.name);
+            Move? assocMove = context.Moves.FirstOrDefault(Move => Move.Id == rating.Move.Id);
             if (assocMove != null) {
                 assocMove.Ratings.Add(rating);
                 context.MoveRating.Add(rating);
@@ -84,7 +84,6 @@ namespace BornToMove.DAL {
         {
             double rating = 0;
             IEnumerable<MoveRating> ratingsByMove = context.MoveRating.Where(rating => rating.Move.name == name);
-            if (ratingsByMove.Any()) { Console.WriteLine("this move has the following ratings" + ratingsByMove.ElementAt(0).Rating.ToString()); }
             if (ratingsByMove.Any())
             {
                 rating = ratingsByMove.Select(rating => rating.Rating).Average();

@@ -19,52 +19,49 @@ namespace BornToMove.Business
             return false; 
         }
 
-        public (Move, MoveRating) getRandomMove()
+        public MoveRating getRandomMove()
         {
             Random rand = new Random();
-            (List<Move> allMoves, IEnumerable<MoveRating> Ratings) = getAllMoves();
-            int moveNr = rand.Next(0, allMoves.Count - 1);
-            Move thisMove = allMoves[moveNr]; 
-            return (allMoves[moveNr], Ratings.ElementAt(moveNr));
+            IEnumerable<MoveRating> Ratings = getAllMoves();
+            int moveNr = rand.Next(0, Ratings.Count() - 1);
+            return Ratings.ElementAt(moveNr);
         }
 
-        public (List<Move>, IEnumerable<MoveRating>) getAllMoves()
+        public IEnumerable<MoveRating> getAllMoves()
         {
             List<Move> moves = moveCrud.readAllMoves();
             IEnumerable<MoveRating> averageRatings = moveCrud.readAllMovesWithRatings();
-            return (moves, averageRatings);
+            return averageRatings;
         }
 
-        public bool tryToUpdateMove(String oldName, Move move)
+        public bool tryToUpdateMove(int Id, Move move)
         {
             if (moveCrud.readMoveByName(move.name) is not null)
             {
-                moveCrud.updateMove(oldName, move.name, move.description, move.sweatrate);
+                moveCrud.updateMove(Id, move.name, move.description, move.sweatrate);
                 return true;
             }
             return false;
         }
 
-        public (Move, MoveRating) getLastMove()
+        public MoveRating getLastMove()
         {
-            (List<Move> allMoves, IEnumerable<MoveRating> Ratings) = getAllMoves();
-            int moveNr = allMoves.Count - 1;
-            Move thisMove = allMoves[moveNr];
-            return (allMoves[moveNr], Ratings.ElementAt(moveNr));
+            IEnumerable<MoveRating> Ratings = getAllMoves();
+            int moveNr = Ratings.Count() - 1;
+            return Ratings.ElementAt(moveNr);
         }
 
-        public (Move, MoveRating) getMoveById(int Id)
+        public MoveRating getMoveById(int Id)
         {
-            (List<Move> allMoves, IEnumerable<MoveRating> Ratings) = getAllMoves();
-            int moveNr = allMoves.Count - 1;
-            Move thisMove = allMoves[moveNr];
-            return (allMoves[Id - 1], Ratings.ElementAt(Id - 1));
+            IEnumerable<MoveRating> Ratings = getAllMoves();
+            int moveNr = Ratings.Count() - 1;
+            return Ratings.ElementAt(Id - 1);
         }
 
         public void AddMovesIfEmpty()
         {
-            (List<Move> allMoves, IEnumerable<MoveRating> Ratings) = getAllMoves();
-            if (allMoves.Count() == 0)
+            IEnumerable<MoveRating> Ratings = getAllMoves();
+            if (Ratings.Count() == 0)
             {
                 TryToMakeAMove(new Move("Push up", "Ga horizontaal liggen op teentoppen en handen. " +
                     "Laat het lijf langzaam zakken tot de neus de grond bijna raakt. " +
@@ -78,11 +75,11 @@ namespace BornToMove.Business
             }
         }
 
-        public bool TryToMakeRating(MoveRating newRating, String moveName)
+        public bool TryToMakeRating(MoveRating newRating)
         {
-            if (moveCrud.readMoveByName(moveName) == newRating.Move)
+            if (moveCrud.readMoveByName(newRating.Move.name) == newRating.Move)
             {
-                moveCrud.updateMove(moveName, rating: newRating);
+                moveCrud.updateMove(newRating.Move.Id, rating: newRating);
                 moveCrud.createRating(newRating);
                 return true;
             }

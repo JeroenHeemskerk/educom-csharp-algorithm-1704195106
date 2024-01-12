@@ -3,6 +3,9 @@ using System.Xml.Serialization;
 using Microsoft.Data.SqlClient;
 using Microsoft.IdentityModel.Tokens;
 using BornToMove.Business;
+using BornToMove.OrganizerTest;
+using Org;
+using BornToMove.DAL;
 
 namespace BornToMove
 {
@@ -10,6 +13,17 @@ namespace BornToMove
     {
         static void Main(string[] args)
         {
+            //test if RotateSort works as it should
+
+            /*
+            RotateSortTests tests = new RotateSortTests();
+            tests.testSortEmpty();
+            tests.testSortOneElement();
+            tests.testSortTwoElements();
+            tests.testSortThreeEqual();
+            tests.testSortUnsortedArray();
+            tests.testSortUnsortedThreeEqual();
+            */
             try {
                 BuMove buMove = new BuMove();
                 buMove.AddMovesIfEmpty();
@@ -24,18 +38,21 @@ namespace BornToMove
                 if (choice == 1)
                 {
                     Console.WriteLine("De volgende move is voor u gekozen:");
-                    (chosenMove, chosenRating) = buMove.getRandomMove();
+                    chosenRating = buMove.getRandomMove();
+                    chosenMove = chosenRating.Move;
                 }
                 else
                 {
                     Console.WriteLine("Kies een move uit de volgende lijst van moves of toets 0 om een nieuwe move te maken.");
-                    (List<Move> allMoves, IEnumerable<MoveRating> allRatings) = buMove.getAllMoves();
-                    for (int indexer = 0; indexer != allMoves.Count; indexer++) {
-                        Console.WriteLine(allMoves[indexer].name + ": " + allMoves[indexer].description + ", sweatrate: " 
-                            + allMoves[indexer].sweatrate.ToString() + ", rating: " + allRatings.Select(Rating => Rating.Rating).ElementAt(indexer) 
-                            + ", Vote:" + allRatings.Select(Rating => Rating.Vote).ElementAt(indexer));
+                    IEnumerable<MoveRating> allRatings = buMove.getAllMoves();
+                    RotateSort<MoveRating> sort = new RotateSort<MoveRating>();
+                    List<MoveRating> sortedByRating = sort.Sort(allRatings.ToList(), new RatingConverter());
+                    for (int indexer = 0; indexer != allRatings.Count(); indexer++) {
+                        Console.WriteLine((indexer + 1) + sortedByRating[indexer].Move.name + ": " + sortedByRating[indexer].Move.description + ", sweatrate: " 
+                            + sortedByRating[indexer].Move.sweatrate.ToString() + ", rating: " + sortedByRating.Select(Rating => Rating.Rating).ElementAt(indexer) 
+                            + ", Vote:" + sortedByRating.Select(Rating => Rating.Vote).ElementAt(indexer));
                     }
-                    choice = validChoice(0, allMoves.Count());
+                    choice = validChoice(0, sortedByRating.Select(rating => rating.Move).Count() + 1);
                     if (choice == 0)
                     {
                         newMove = true;
@@ -72,21 +89,22 @@ namespace BornToMove
                             }
                             Console.WriteLine("Voer een sweatrate tussen 1 en 5 in van de nieuwe move:");
                             int newSweatrate = validChoice(1, 5);
+                            chosenMove = new Move(newName, newDescription, newSweatrate);
+                            chosenRating = new MoveRating(chosenMove, 0, 0);
                             if (buMove.TryToMakeAMove(new Move(newName, newDescription, newSweatrate)))
                             {
                                 break;
                             }
                         }
-                        (chosenMove, chosenRating) = buMove.getLastMove();
                         Console.WriteLine("U heeft de volgende nieuwe move gemaakt:");
                     }
                     else
                     {
-                        (chosenMove, chosenRating) = buMove.getMoveById(choice);
+                        chosenRating = sortedByRating.ElementAt(choice - 1);
                         Console.WriteLine("U heeft de volgende move gekozen:");
                     }
                 }
-                Console.WriteLine(chosenMove.name + " - " + chosenMove.description + ", Rating:" + chosenRating.Rating
+                Console.WriteLine(chosenRating.Move.name + " - " + chosenRating.Move.description + ", Rating:" + chosenRating.Rating
                     + ", Vote:" + chosenRating.Vote);
                 if (!newMove)
                 {
@@ -94,7 +112,7 @@ namespace BornToMove
                     int newRating = validChoice(1, 5);
                     Console.WriteLine("Voer nu de vote van de move in:");
                     int newVote = validChoice(1, 5);
-                    buMove.TryToMakeRating(new MoveRating(chosenMove, newRating, newVote), chosenMove.name);
+                    buMove.TryToMakeRating(new MoveRating(chosenRating.Move, newRating, newVote));
                 }    
             }
             catch (SqlException e)

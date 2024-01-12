@@ -13,16 +13,17 @@ namespace Org
             List<int> thisList = MakeList(number);
             ShowList("List", thisList);
             Stopwatch stopWatch = new Stopwatch();
-            stopWatch.Start();
             ShiftHighestSort newSort = new ShiftHighestSort();
+            stopWatch.Start();
             List<int> sortedList = newSort.Sort(thisList);
             ShowList("sortedList", sortedList);
             stopWatch.Stop();
             Console.Write(stopWatch.ElapsedMilliseconds);
+            stopWatch.Reset();
             stopWatch.Start();
-            RotateSort rotate = new RotateSort();
-            //List<int> rotatedList = rotate.Sort(thisList);
-            //ShowList("rotatedList", rotatedList);
+            RotateSort<int> rotate = new RotateSort<int>();
+            List<int> rotatedList = rotate.Sort(thisList, Comparer<int>.Default);
+            ShowList("rotatedList", rotatedList);
             Console.Write(stopWatch.ElapsedMilliseconds);
             stopWatch.Stop();
         }
