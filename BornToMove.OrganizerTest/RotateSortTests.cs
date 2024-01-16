@@ -8,7 +8,7 @@ namespace BornToMove.OrganizerTest
         public RotateSort<int> sort = new RotateSort<int>();
 
         public IComparer<int> comp = Comparer<int>.Default;
-
+        [Test]
         public void testSortEmpty()
         {
             //prepare
@@ -29,7 +29,7 @@ namespace BornToMove.OrganizerTest
             // also check that our input is not modified
             Assert.That(array, Is.EquivalentTo(new int[] {}));
         }
-
+        [Test]
         public void testSortOneElement()
         {
             //prepare
@@ -48,7 +48,7 @@ namespace BornToMove.OrganizerTest
             // also check that our input is not modified
             Assert.That(array, Is.EquivalentTo(new int[] { 1 }));
         }
-
+        [Test]
         public void testSortTwoElements()
         {
             //prepare
@@ -67,7 +67,7 @@ namespace BornToMove.OrganizerTest
             // also check that our input is not modified
             Assert.That(array, Is.EquivalentTo(new int[] { 2, 1 }));
         }
-
+        [Test]
         public void testSortThreeEqual()
         {
             //prepare
@@ -86,7 +86,7 @@ namespace BornToMove.OrganizerTest
             // also check that our input is not modified
             Assert.That(array, Is.EquivalentTo(new int[] { 3, 3, 3 }));
         }
-
+        [Test]
         public void testSortUnsortedArray()
         {
             //prepare
@@ -105,7 +105,7 @@ namespace BornToMove.OrganizerTest
             // also check that our input is not modified
             Assert.That(array, Is.EquivalentTo(new int[] { 2, 1, 3 }));
         }
-
+        [Test]
         public void testSortUnsortedThreeEqual()
         {
             //prepare

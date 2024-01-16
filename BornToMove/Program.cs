@@ -13,17 +13,6 @@ namespace BornToMove
     {
         static void Main(string[] args)
         {
-            //test if RotateSort works as it should
-
-            /*
-            RotateSortTests tests = new RotateSortTests();
-            tests.testSortEmpty();
-            tests.testSortOneElement();
-            tests.testSortTwoElements();
-            tests.testSortThreeEqual();
-            tests.testSortUnsortedArray();
-            tests.testSortUnsortedThreeEqual();
-            */
             try {
                 BuMove buMove = new BuMove();
                 buMove.AddMovesIfEmpty();
